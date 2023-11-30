@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, 
+                         initial-scale=1.0" />
+    <title>QR Code Generator</title>
+    <style>
+        h1, h3 {
+          color: green;
+        }
+        body, header {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+    </style>
+ 
+    <script src=
+"https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+    </script>
+
+    
+</head>
+ 
+<body>
+    <header>
+        
+    </header>
+    <main>
+        <form action="/"
+              id="qr-generation-form">
+            <input type="submit"
+                   value="Generate QR Code" />
+        </form><br />
+        <div id="qr-code"></div>
+    </main>
+</body>
+<script>
+  
+  
+
+    let qrContentInput = document.getElementById("qr-content");
+    let qrCode;
+     
+    function generateQrCode(qrContent) {
+      return new QRCode("qr-code", {
+        text: qrContent,
+        width: 256,
+        height: 256,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H,
+      });
+    }
+     
+    // Event listener for form submit event
+    document.addEventListener("submit", async (event) =>{
+    event.preventDefault();
+
+      const response = await fetch('/getQR');
+      const data = await response.json();
+      var qrC = data.qrC;
+      // Prevent form submission
+      let qrContent = qrC;
+      if (qrCode == null) {
+           
+        // Generate code initially
+        qrCode = generateQrCode(qrContent);
+      } else {
+           
+        // If code already generated then make 
+        // again using same object
+        qrCode.makeCode(qrContent);
+      }
+    });
+</script>
+ 
+</html>

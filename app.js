@@ -1,29 +1,50 @@
+const express = require('express');
+const { Client } = require('whatsapp-web.js');
+const path = require("path");
 const qrcode = require('qrcode-terminal');
 
-const { Client, LocalAuth, Chat } = require('whatsapp-web.js');
-const client = new Client({
-    authStrategy: new LocalAuth()
+const app = express();
+
+// Initialize a WhatsApp client
+const client = new Client();
+let qrC = '';
+
+// Serve a simple homepage
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+  });
+
+// Event fired when the QR code is generated
+client.on('qr', (qr) => {
+  console.log('QR Code generated!');
+  qrC = qr;
+  console.log(qrC);
+  //qrcode.generate(qr, { small: true });
 });
-var currentdate = new Date();
 
-var cron = require('node-cron'); 
+app.get('/getQR', (req,res) => {
+    // const qrCo = qrC;
+    // console.log(shopifyToken);
+    res.json({ qrC });
+})
 
-client.on('qr', qr => {
-    qrcode.generate(qr, {small: true});
-});
-
+// Event fired when the client is ready to connect
 client.on('ready', () => {
-    console.log('Client is ready!');
-    client.sendMessage('16314646407@c.us', `Your water reminder Mango Pie`);
-    scheduleMessages();
+  console.log('Client is ready!');
+  scheduleMessages();
 });
 
-client.initialize();
+// Event fired upon receiving a new message
+client.on('message', (message) => {
+    console.log(`Received message: ${message.body}`);
+    
+
+});
 
 function scheduleMessages() {
     scheduleMessageAtSpecificTime(11, 0); // Send message at 11:00 AM
     scheduleMessageAtSpecificTime(13, 0); // Send message at 1:00 PM
-    scheduleMessageAtSpecificTime(15, 15); // Send message at 3:15 PM
+    scheduleMessageAtSpecificTime(16, 30); // Send message at 3:15 PM
 }
 
 function scheduleMessageAtSpecificTime(hours, minutes) {
@@ -48,4 +69,12 @@ function scheduleMessageAtSpecificTime(hours, minutes) {
 function sendMessage() {
     client.sendMessage('16314646407@c.us', `Your water reminder Mango Pie`);
 }
- 
+
+// Connect the client
+client.initialize();
+
+// Start the server
+const PORT = process.env.PORT || 8080; // Use environment port or default to 3000
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
