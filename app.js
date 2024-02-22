@@ -67,7 +67,7 @@ function scheduleMessageAtSpecificTime(hours, minutes) {
 }
 
 function sendMessage() {
-    client.sendMessage('16314646407@c.us', `Your water reminder Mango Pie`);
+    client.sendMessage('19876543210@c.us', `Your water reminder`);
 }
 
 // Connect the client
